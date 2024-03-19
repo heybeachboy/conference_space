@@ -1,0 +1,17 @@
+Env: "develop" # develop | test | prod
+Debug: true
+ServerAddr: "0.0.0.0"
+ServerPort: 9999
+Mysql:
+  Host: "127.0.0.1"
+  Port: 3306
+  DbName: "conference_space"
+  Username: "root"
+  Password: "7q4a1z"
+  SetLog: true
+Token:
+  ShareSecret: "dsfdsfsfsfs" #token加密解密的共享密钥
+  LifeExpire: 7 #token最长多少天后过期
+AgoraRtc:
+  AppId: ""
+  AppCertificate: ""

@@ -1,0 +1,520 @@
+basePath: /conference
+definitions:
+  ConferenceSpace_data_api.LoginResp:
+    properties:
+      token:
+        description: 用户登陆token
+        type: string
+      user_id:
+        description: 用户user_id
+        type: integer
+    type: object
+  ConferenceSpace_data_api.RegisterReq:
+    properties:
+      confirm_password:
+        description: 确认输入密码
+        type: string
+      email:
+        description: 用户邮箱
+        type: string
+      gender:
+        allOf:
+        - $ref: '#/definitions/constant.GenderTyp'
+        description: 性别0:female,1:male
+      nickname:
+        description: 用户昵称
+        type: string
+      password:
+        description: 登陆密码
+        type: string
+      phone:
+        description: 用户手机
+        type: string
+      username:
+        description: 用户登陆名
+        type: string
+    required:
+    - confirm_password
+    - email
+    - nickname
+    - password
+    - phone
+    - username
+    type: object
+  ConferenceSpace_data_ws.Content:
+    properties:
+      content:
+        description: Kind    ContentKind     `json:"kind"`    //消息内容类型113:语音消息,112:图片消息,113:语音消息,114:视频消息,115:发送文件消息,116:发送位置消息,117对方正在输入消息提示,118:消息Quote,119:个人名片消息,120:AT消息
+        items:
+          type: integer
+        type: array
+    type: object
+  ConferenceSpace_data_ws.MsgCode:
+    enum:
+    - 10000
+    - 10001
+    - 10002
+    - 10003
+    - 10004
+    - 10005
+    type: integer
+    x-enum-comments:
+      CreateRoom: 创建文件
+      KickOffline: 踢下线
+      PingTest: Ping测试
+      RefreshToken: 刷新token
+      SendLocation: 发送位置
+      UserOffLine: 用户离线
+    x-enum-varnames:
+    - PingTest
+    - SendLocation
+    - UserOffLine
+    - KickOffline
+    - RefreshToken
+    - CreateRoom
+  ConferenceSpace_data_ws.NewRoom:
+    properties:
+      channel_name:
+        type: string
+      end_at:
+        type: integer
+      own_id:
+        type: integer
+      root_id:
+        type: integer
+      start_at:
+        type: integer
+    type: object
+  ConferenceSpace_data_ws.PackKind:
+    enum:
+    - 1
+    - 2
+    type: integer
+    x-enum-comments:
+      GroupChatPack: 群组消息数据包
+      SingleChatPack: 个人消息数据包
+    x-enum-varnames:
+    - SingleChatPack
+    - GroupChatPack
+  ConferenceSpace_data_ws.Ping:
+    properties:
+      time:
+        description: 发送时间
+        type: integer
+    type: object
+  ConferenceSpace_data_ws.RtcToken:
+    properties:
+      channel_name:
+        description: 频道名
+        type: string
+      role:
+        description: 角色1发部者,2观众
+        type: integer
+      uid:
+        description: 用户userId
+        type: integer
+    type: object
+  ConferenceSpace_data_ws.UserLocation:
+    properties:
+      uid:
+        description: 用户uid
+        type: integer
+      x:
+        description: 用户x坐标
+        type: number
+      "y":
+        description: 用户y坐标
+        type: number
+      z:
+        description: 用户z坐标
+        type: number
+    type: object
+  ConferenceSpace_data_ws.UserOffline:
+    properties:
+      time:
+        description: 下线时间
+        type: integer
+      uid:
+        description: 下线用户uid
+        type: integer
+      username:
+        description: 下线用户名
+        type: string
+    type: object
+  ConferenceSpace_data_ws.WsProtocol:
+    properties:
+      code:
+        allOf:
+        - $ref: '#/definitions/ConferenceSpace_data_ws.MsgCode'
+        description: 消息类型
+      from:
+        description: 发送人的userId
+        type: integer
+      kind:
+        allOf:
+        - $ref: '#/definitions/ConferenceSpace_data_ws.PackKind'
+        description: 1表示以送个人消息，2表示发送群组消息
+      payload:
+        allOf:
+        - $ref: '#/definitions/ConferenceSpace_data_ws.Content'
+        description: 消息载体
+      to:
+        description: 到地方人的userId如果*表示广播
+        type: integer
+    type: object
+  constant.GenderTyp:
+    enum:
+    - 1
+    - 0
+    type: integer
+    x-enum-varnames:
+    - Male
+    - Female
+  controller.EchoReq:
+    properties:
+      code:
+        type: integer
+      echo_msg:
+        type: string
+    type: object
+  util.RespCode:
+    enum:
+    - 0
+    - 4000
+    - 4003
+    - 5000
+    type: integer
+    x-enum-comments:
+      BadRequestCode: 请求参数异常
+      ErrorCode: 异常请求响应码
+      NormalCode: 正常业务响应码
+      TokenErrorCode: token提交异常
+    x-enum-varnames:
+    - NormalCode
+    - BadRequestCode
+    - TokenErrorCode
+    - ErrorCode
+  util.RespJsonBody:
+    properties:
+      code:
+        $ref: '#/definitions/util.RespCode'
+      data: {}
+      message:
+        type: string
+    type: object
+host: 127.0.0.1:8900
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server Petstore server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Reference Square API
+  version: "1.0"
+paths:
+  /conference/api/v1/ws:
+    get:
+      consumes:
+      - application/json
+      description: 用于创建websocket连接/conference/api/v1/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVaWQiOiIyNzQyNzk5MDcxODgxODEyIiwiTmlja05hbWUiOiJQUFAiLCJVc2VyTmFtZSI6Ikxlb24iLCJJcCI6IjEyNy4wLjAuMSIsImV4cCI6MTcwOTk3MzA1NCwibmJmIjoxNzA5ODg2NjU0LCJpYXQiOjE3MDk4ODY2NTR9.o7vFddZLZ662lr2e5gbe_umohvbdtRa1T1MNuCWiN5Q
+      operationId: WsServer
+      parameters:
+      - description: 新用户登陆
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/ConferenceSpace_data_ws.WsProtocol'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 处理成功
+          schema:
+            $ref: '#/definitions/ConferenceSpace_data_ws.WsProtocol'
+        "4000":
+          description: 请求参数有误
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+        "4003":
+          description: Token处理异常
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+        "5000":
+          description: 业务内部处理错误
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+      summary: 会议websocket
+      tags:
+      - 会议API
+  /conference/login:
+    post:
+      consumes:
+      - application/json
+      description: 用于用户登陆
+      operationId: Login
+      parameters:
+      - description: 新用户登陆
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/ConferenceSpace_data_api.RegisterReq'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 处理成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/util.RespJsonBody'
+            - properties:
+                data:
+                  $ref: '#/definitions/ConferenceSpace_data_api.LoginResp'
+              type: object
+        "4000":
+          description: 请求参数有误
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+        "4003":
+          description: Token处理异常
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+        "5000":
+          description: 业务内部处理错误
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+      summary: 用户登陆
+      tags:
+      - 会议注册登陆
+  /conference/register:
+    post:
+      consumes:
+      - application/json
+      description: 用于用户注册
+      operationId: Register
+      parameters:
+      - description: 新用户注册
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/ConferenceSpace_data_api.RegisterReq'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 处理成功
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+        "4000":
+          description: 请求参数有误
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+        "4003":
+          description: Token处理异常
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+        "5000":
+          description: 业务内部处理错误
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+      summary: 用户注册
+      tags:
+      - 会议注册登陆
+  /created/room:
+    post:
+      consumes:
+      - application/json
+      description: 用于创建房间
+      operationId: CreatedRoom
+      parameters:
+      - description: 创建房间参数
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/ConferenceSpace_data_ws.NewRoom'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 处理成功token字符串放在data字段
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+        "4000":
+          description: 请求参数有误
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+        "4003":
+          description: Token处理异常
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+        "5000":
+          description: 业务内部处理错误
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+      summary: 创建房间(10005)
+      tags:
+      - Websocket
+  /echo:
+    post:
+      consumes:
+      - application/json
+      description: 用于测试响应是否正常
+      operationId: CreateAccount
+      parameters:
+      - description: code和echo_msg必填
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/controller.EchoReq'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 处理成功
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+        "4000":
+          description: 请求参数有误
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+        "4003":
+          description: Token处理异常
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+        "5000":
+          description: 业务内部处理错误
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+      summary: ECHO
+      tags:
+      - Reference Space
+  /ping:
+    post:
+      consumes:
+      - application/json
+      description: 用于Ping测试
+      operationId: Ping
+      parameters:
+      - description: 用于保持网络链路活跃(建议15-60秒发送一次)
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/ConferenceSpace_data_ws.Ping'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 处理成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/util.RespJsonBody'
+            - properties:
+                data:
+                  $ref: '#/definitions/ConferenceSpace_data_ws.Ping'
+              type: object
+        "4000":
+          description: 请求参数有误
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+        "4003":
+          description: Token处理异常
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+        "5000":
+          description: 业务内部处理错误
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+      summary: 用于Ping测试(10000)
+      tags:
+      - Websocket
+  /refresh/token:
+    post:
+      consumes:
+      - application/json
+      description: 用于刷新token
+      operationId: RefreshToken
+      parameters:
+      - description: 请求token刷新
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/ConferenceSpace_data_ws.RtcToken'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 处理成功token字符串放在data字段
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+        "4000":
+          description: 请求参数有误
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+        "4003":
+          description: Token处理异常
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+        "5000":
+          description: 业务内部处理错误
+          schema:
+            $ref: '#/definitions/util.RespJsonBody'
+      summary: 用于刷新Token(10004)
+      tags:
+      - Websocket
+  /user/offline:
+    post:
+      consumes:
+      - application/json
+      description: 通知用户下线
+      operationId: UserOffline
+      parameters:
+      - description: 请求token刷新
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/ConferenceSpace_data_ws.UserOffline'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 处理成功token字符串放在data字段
+          schema:
+            $ref: '#/definitions/ConferenceSpace_data_ws.UserOffline'
+      summary: 通知用户下线(10002)
+      tags:
+      - Websocket
+  /user/send/loaction:
+    post:
+      consumes:
+      - application/json
+      description: 用户发送位置变化
+      operationId: UserSendLocation
+      parameters:
+      - description: 请求token刷新
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/ConferenceSpace_data_ws.UserLocation'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 处理成功token字符串放在data字段
+          schema:
+            $ref: '#/definitions/ConferenceSpace_data_ws.UserLocation'
+      summary: 用户发送位置变化(10001)
+      tags:
+      - Websocket
+swagger: "2.0"

@@ -1,0 +1,16 @@
+[Unit]
+Description="Conference Space"
+After= network.target
+
+[Service]
+Type=simple
+# 可根据实际情况修改user
+User=root
+WorkingDirectory=/usr/local/conference
+# 根据实际情况配置
+ExecStart=/usr/local/conference/square -c /usr/local/conference/config/config.yaml
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
