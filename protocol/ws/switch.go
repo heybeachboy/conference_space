@@ -1,6 +1,7 @@
 package ws
 
 import (
+	"ConferenceSpace/constant"
 	"ConferenceSpace/data/ws"
 	"ConferenceSpace/logger"
 	"context"
@@ -55,6 +56,8 @@ func (s *SwSwitch) Run() {
 				logger.WaringF("username : %s uid : %s repeat login, kick offline")
 				conn.Send(s.getKickOfflineData(conn.ctx.Uid, conn.ctx.Username)) //通知客户端被踢下线
 				conn.Close()
+			} else {
+				HubService.broadcast(s.getOnlineData(cl.ctx.Uid, cl.ctx.Username))
 			}
 			s.sessionMap[cl.ctx.Uid] = cl
 			go cl.reader()
@@ -72,7 +75,20 @@ func (s *SwSwitch) getKickOfflineData(uid uint32, username string) []byte {
 	payload.At = time.Now().Unix()
 	pack := new(ws.Pack)
 	pack.To = uid
-	pack.Code = ws.KickOffline
+	pack.Code = ws.KickOfflineNotify
+	pack.Kind = ws.SingleChatPack
+	pack.Payload = payload.Marshal()
+	return pack.Marshal()
+}
+
+func (s *SwSwitch) getOnlineData(uid uint32, username string) []byte {
+	payload := new(ws.UserOnline)
+	payload.Uid = constant.UID(uid)
+	payload.Username = username
+	payload.At = time.Now().Unix()
+	pack := new(ws.Pack)
+	pack.To = uid
+	pack.Code = ws.UserOnlineNotify
 	pack.Kind = ws.SingleChatPack
 	pack.Payload = payload.Marshal()
 	return pack.Marshal()
@@ -85,7 +101,7 @@ func (s *SwSwitch) userOfflineBroadcast(uid uint32, username string) {
 	payload.At = time.Now().Unix()
 	pack := new(ws.Pack)
 	pack.To = uid
-	pack.Code = ws.UserOffLine
+	pack.Code = ws.UserOffLineNotify
 	pack.Kind = ws.SingleChatPack
 	pack.Payload = payload.Marshal()
 	s.broadcast(pack.Marshal())

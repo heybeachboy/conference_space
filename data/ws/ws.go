@@ -51,12 +51,14 @@ const (
 type MsgCode int
 
 const (
-	PingTest     MsgCode = 10000 //Ping测试
-	SendLocation MsgCode = 10001 //发送位置
-	UserOffLine  MsgCode = 10002 //用户离线
-	KickOffline  MsgCode = 10003 //踢下线
-	RefreshToken MsgCode = 10004 //刷新token
-	CreateRoom   MsgCode = 10005 //创建文件
+	PingTest          MsgCode = 10000 //Ping测试
+	SendLocation      MsgCode = 10001 //发送位置
+	UserOffLineNotify MsgCode = 10002 //用户离线
+	KickOfflineNotify MsgCode = 10003 //踢下线
+	RefreshToken      MsgCode = 10004 //刷新token
+	CreateRoom        MsgCode = 10005 //创建文件
+	UserOnlineNotify  MsgCode = 10006 //用户上线
+	UserOnlineList    MsgCode = 10007 //所有在线用户
 )
 
 type ContentKind uint8

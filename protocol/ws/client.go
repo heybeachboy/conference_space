@@ -95,7 +95,7 @@ func (c *Client) dispatch(data []byte) {
 		c.service.Ping(p)
 	case ws.RefreshToken:
 		c.service.RefreshToken(p)
-	case ws.UserOffLine:
+	case ws.UserOffLineNotify:
 		c.service.UserOffLine(p)
 	case ws.CreateRoom:
 		c.service.CreatedRoom(p)
