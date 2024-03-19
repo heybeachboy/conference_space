@@ -57,21 +57,27 @@ definitions:
     - 10003
     - 10004
     - 10005
+    - 10006
+    - 10007
     type: integer
     x-enum-comments:
       CreateRoom: 创建文件
-      KickOffline: 踢下线
+      KickOfflineNotify: 踢下线
       PingTest: Ping测试
       RefreshToken: 刷新token
       SendLocation: 发送位置
-      UserOffLine: 用户离线
+      UserOffLineNotify: 用户离线
+      UserOnlineList: 所有在线用户
+      UserOnlineNotify: 用户上线
     x-enum-varnames:
     - PingTest
     - SendLocation
-    - UserOffLine
-    - KickOffline
+    - UserOffLineNotify
+    - KickOfflineNotify
     - RefreshToken
     - CreateRoom
+    - UserOnlineNotify
+    - UserOnlineList
   ConferenceSpace_data_ws.NewRoom:
     properties:
       channel_name:
@@ -139,6 +145,18 @@ definitions:
         type: integer
       username:
         description: 下线用户名
+        type: string
+    type: object
+  ConferenceSpace_data_ws.UserOnline:
+    properties:
+      time:
+        description: 上线时间
+        type: integer
+      uid:
+        description: 上线用户uid
+        type: integer
+      username:
+        description: 上线用户名
         type: string
     type: object
   ConferenceSpace_data_ws.WsProtocol:
@@ -492,6 +510,56 @@ paths:
           schema:
             $ref: '#/definitions/ConferenceSpace_data_ws.UserOffline'
       summary: 通知用户下线(10002)
+      tags:
+      - Websocket
+  /user/online:
+    post:
+      consumes:
+      - application/json
+      description: 通知用户上线
+      operationId: UserOnline
+      parameters:
+      - description: 请求token刷新
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/ConferenceSpace_data_ws.UserOnline'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 处理成功token字符串放在data字段
+          schema:
+            $ref: '#/definitions/ConferenceSpace_data_ws.UserOnline'
+      summary: 通知用户上线(10006)
+      tags:
+      - Websocket
+  /user/online/list:
+    post:
+      consumes:
+      - application/json
+      description: 发送所有的在线用户列表
+      operationId: UsersOnlineList
+      parameters:
+      - description: 请求token刷新
+        in: body
+        name: payload
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/ConferenceSpace_data_ws.UserOnline'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 处理成功token字符串放在data字段
+          schema:
+            items:
+              $ref: '#/definitions/ConferenceSpace_data_ws.UserOnline'
+            type: array
+      summary: 发送所有的在线用户列表(10007)
       tags:
       - Websocket
   /user/send/loaction:

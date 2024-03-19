@@ -10,13 +10,16 @@ import (
 	"time"
 )
 
+const PushMessageBufferSize = 1000
+const NewClientBufferSize = 200
+
 func NewWsSwitch() *SwSwitch {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &SwSwitch{
 		ctx:        ctx,
 		cancel:     cancel,
-		PushChan:   make(chan *ws.PushPack),
-		newChan:    make(chan *Client),
+		PushChan:   make(chan *ws.PushPack, PushMessageBufferSize),
+		newChan:    make(chan *Client, NewClientBufferSize),
 		lock:       new(sync.Mutex),
 		sessionMap: make(map[uint32]*Client),
 	}
@@ -62,6 +65,7 @@ func (s *SwSwitch) Run() {
 			s.sessionMap[cl.ctx.Uid] = cl
 			go cl.reader()
 			go cl.writer()
+			cl.sendOnlineUserList()
 		}
 
 	}

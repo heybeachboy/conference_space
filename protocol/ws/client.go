@@ -1,6 +1,7 @@
 package ws
 
 import (
+	"ConferenceSpace/constant"
 	"ConferenceSpace/data/ws"
 	"ConferenceSpace/logger"
 	"context"
@@ -148,4 +149,19 @@ func (c *Client) Send(data []byte) {
 
 func (c *Client) GetCtx() *ws.SessionContext {
 	return c.ctx
+}
+
+func (c *Client) sendOnlineUserList() {
+	list := make([]*ws.UserOnline, 0)
+	OnlineUserMap.Range(func(key constant.UID, value *ws.UserOnline) bool {
+		list = append(list, value)
+		return true
+	})
+	data, _ := json.Marshal(list)
+	pack := new(ws.Pack)
+	pack.To = c.ctx.Uid
+	pack.Code = ws.UserOnlineList
+	pack.Kind = ws.SingleChatPack
+	pack.Payload = data
+	c.Send(pack.Marshal())
 }

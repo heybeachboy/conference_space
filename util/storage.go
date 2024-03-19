@@ -72,19 +72,6 @@ func (sm *SafeMap[K, V]) Range(f func(key K, value V) bool) {
 	}
 }
 
-func (sm *SafeMap[K, V]) RangeList(f func(key K, value V) bool) []V {
-	sm.dataLock.RLock()         // 获取读锁
-	defer sm.dataLock.RUnlock() // 确保函数结束时释放读锁
-	list := make([]V, 0)
-	for k, v := range sm.dataMap {
-		if !f(k, v) { // 执行回调，如果返回 false，则终止遍历
-			list = append(list, v)
-			break
-		}
-	}
-	return list
-}
-
 // Len 返回 SafeMap 中的键值对数量。
 // 此操作是线程安全的。
 func (sm *SafeMap[K, V]) Len() int {

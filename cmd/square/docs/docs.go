@@ -454,6 +454,82 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/online": {
+            "post": {
+                "description": "通知用户上线",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Websocket"
+                ],
+                "summary": "通知用户上线(10006)",
+                "operationId": "UserOnline",
+                "parameters": [
+                    {
+                        "description": "请求token刷新",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ConferenceSpace_data_ws.UserOnline"
+                        }
+                    }
+                ],
+                "responses": {
+                    "0": {
+                        "description": "处理成功token字符串放在data字段",
+                        "schema": {
+                            "$ref": "#/definitions/ConferenceSpace_data_ws.UserOnline"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/online/list": {
+            "post": {
+                "description": "发送所有的在线用户列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Websocket"
+                ],
+                "summary": "发送所有的在线用户列表(10007)",
+                "operationId": "UsersOnlineList",
+                "parameters": [
+                    {
+                        "description": "请求token刷新",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ConferenceSpace_data_ws.UserOnline"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "0": {
+                        "description": "处理成功token字符串放在data字段",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ConferenceSpace_data_ws.UserOnline"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/user/send/loaction": {
             "post": {
                 "description": "用户发送位置变化",
@@ -569,23 +645,29 @@ const docTemplate = `{
                 10002,
                 10003,
                 10004,
-                10005
+                10005,
+                10006,
+                10007
             ],
             "x-enum-comments": {
                 "CreateRoom": "创建文件",
-                "KickOffline": "踢下线",
+                "KickOfflineNotify": "踢下线",
                 "PingTest": "Ping测试",
                 "RefreshToken": "刷新token",
                 "SendLocation": "发送位置",
-                "UserOffLine": "用户离线"
+                "UserOffLineNotify": "用户离线",
+                "UserOnlineList": "所有在线用户",
+                "UserOnlineNotify": "用户上线"
             },
             "x-enum-varnames": [
                 "PingTest",
                 "SendLocation",
-                "UserOffLine",
-                "KickOffline",
+                "UserOffLineNotify",
+                "KickOfflineNotify",
                 "RefreshToken",
-                "CreateRoom"
+                "CreateRoom",
+                "UserOnlineNotify",
+                "UserOnlineList"
             ]
         },
         "ConferenceSpace_data_ws.NewRoom": {
@@ -683,6 +765,23 @@ const docTemplate = `{
                 },
                 "username": {
                     "description": "下线用户名",
+                    "type": "string"
+                }
+            }
+        },
+        "ConferenceSpace_data_ws.UserOnline": {
+            "type": "object",
+            "properties": {
+                "time": {
+                    "description": "上线时间",
+                    "type": "integer"
+                },
+                "uid": {
+                    "description": "上线用户uid",
+                    "type": "integer"
+                },
+                "username": {
+                    "description": "上线用户名",
                     "type": "string"
                 }
             }
