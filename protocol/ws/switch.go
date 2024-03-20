@@ -65,6 +65,11 @@ func (s *SwSwitch) Run() {
 			s.sessionMap[cl.ctx.Uid] = cl
 			go cl.reader()
 			go cl.writer()
+			OnlineUserMap.Set(constant.UID(cl.ctx.Uid), &ws.UserOnline{
+				Uid:      constant.UID(cl.ctx.Uid),
+				Username: cl.ctx.Username,
+				At:       time.Now().Unix(),
+			})
 			cl.sendOnlineUserList()
 		}
 
