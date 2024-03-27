@@ -104,6 +104,7 @@ func (s *SwSwitch) getOnlineData(uid uint32, username string) []byte {
 }
 
 func (s *SwSwitch) userOfflineBroadcast(uid uint32, username string) {
+	OnlineUserMap.Delete(constant.UID(uid))
 	payload := new(ws.UserOffline)
 	payload.Uid = uid
 	payload.Username = username
